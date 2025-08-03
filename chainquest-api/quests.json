@@ -1,0 +1,107 @@
+[
+    {
+        "id": 1,
+        "nombre": "El Despertar",
+        "descripcion": "Conecta tu wallet por primera vez.",
+        "XP": 50,
+        "tipo": "básica"
+    },
+    {
+        "id": 2,
+        "nombre": "El Juramento Eterno",
+        "descripcion": "Firma tu primer mensaje como aventurero.",
+        "XP": 60,
+        "tipo": "básica"
+    },
+    {
+        "id": 3,
+        "nombre": "La Forja del NFT",
+        "descripcion": "Crea tu NFT seleccionando tu clase inicial.",
+        "XP": 80,
+        "tipo": "básica"
+    },
+    {
+        "id": 4,
+        "nombre": "La Prueba del Eco",
+        "descripcion": "Detecta el evento generado al completar una acción.",
+        "XP": 70,
+        "tipo": "intermedia"
+    },
+    {
+        "id": 5,
+        "nombre": "Sabio de IPFS",
+        "descripcion": "Encuentra una reliquia en la red IPFS.",
+        "XP": 100,
+        "tipo": "intermedia"
+    },
+    {
+        "id": 6,
+        "nombre": "Runas del Código",
+        "descripcion": "Comprende el ABI de un contrato.",
+        "XP": 90,
+        "tipo": "intermedia"
+    },
+    {
+        "id": 7,
+        "nombre": "El Ritual del Hexágono",
+        "descripcion": "Firma un mensaje con un nonce aleatorio.",
+        "XP": 100,
+        "tipo": "intermedia"
+    },
+    {
+        "id": 8,
+        "nombre": "Invocador Visual",
+        "descripcion": "Personaliza tu NFT con una mejora visual.",
+        "XP": 110,
+        "tipo": "intermedia"
+    },
+    {
+        "id": 9,
+        "nombre": "Arquitecto del Laberinto",
+        "descripcion": "Crea una misión personalizada.",
+        "XP": 120,
+        "tipo": "avanzada"
+    },
+    {
+        "id": 10,
+        "nombre": "Maestro de Misiones",
+        "descripcion": "Completa al menos 5 misiones distintas.",
+        "XP": 150,
+        "tipo": "meta"
+    },
+    {
+        "id": 11,
+        "nombre": "El Eco de los Bloques",
+        "descripcion": "Consulta el número del último bloque y úsalo como respuesta.",
+        "XP": 90,
+        "tipo": "intermedia"
+    },
+    {
+        "id": 12,
+        "nombre": "Maestro de ABI",
+        "descripcion": "Decodifica manualmente un input codificado en ABI.",
+        "XP": 130,
+        "tipo": "avanzada"
+    },
+    {
+        "id": 13,
+        "nombre": "El Oráculo Interior",
+        "descripcion": "Consume datos de un oráculo simulado y muéstralo en el dashboard.",
+        "XP": 120,
+        "tipo": "avanzada"
+    },
+    {
+        "id": 14,
+        "nombre": "Forjador de Eventos",
+        "descripcion": "Emite un evento personalizado desde un contrato simulado y valida su estructura.",
+        "XP": 140,
+        "tipo": "avanzada"
+    },
+    {
+        "id": 15,
+        "nombre": "Hacker del Metaverso",
+        "descripcion": "Modifica un tokenURI para reflejar un atributo oculto sin romper el formato.",
+        "XP": 150,
+        "tipo": "avanzada"
+    }
+]
