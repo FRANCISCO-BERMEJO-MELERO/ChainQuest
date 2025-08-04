@@ -1,9 +1,13 @@
 const express = require('express');
+const cors = require('cors'); // ✅ AÑADIDO
 const { ethers } = require('ethers');
 require('dotenv').config();
 
 const app = express();
 const port = 3000;
+
+// ✅ HABILITA CORS PARA TODAS LAS RUTAS Y ORÍGENES
+app.use(cors());
 
 // Configurar provider
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
@@ -14,11 +18,6 @@ const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 
 app.get('/metadata/:tokenId', async (req, res) => {
   const tokenId = req.params.tokenId;
-
-  // 1. Obtener address del jugador (usando playerToTokenId inverso o directamente)
-  // 2. Leer eventos MissionCompleted del jugador
-  // 3. Calcular XP y nivel
-  // 4. Armar JSON dinámico
 
   const metadata = {
     name: `Aventurero #${tokenId}`,
