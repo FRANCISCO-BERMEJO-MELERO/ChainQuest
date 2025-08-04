@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { useNFTReadContract } from "./hooks/useNFTReadContract";
 
 export const CardNFT = () => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const contract = useNFTReadContract();
 
   const [metadata, setMetadata] = useState(null);
@@ -39,21 +39,25 @@ export const CardNFT = () => {
     loadNFT();
   }, [address, contract]);
 
-  if (loading) return <div className="p-4">🔄 Cargando tu NFT...</div>;
+  if (loading) return <div className="p-4"></div>;
   if (error) return <div className="p-4 text-red-600">⚠️ {error}</div>;
   if (!metadata) return null;
 
   return (
-    <div className="max-w-sm rounded-2xl overflow-hidden shadow-lg p-4 bg-white border">
-      <img
-        className="w-full rounded-xl"
-        src={metadata.image}
-        alt={metadata.name}
-      />
-      <div className="py-4">
-        <h2 className="text-xl text-gray-950 font-bold mb-2">{metadata.name}</h2>
-        <p className="text-gray-700 text-sm">{metadata.description}</p>
-      </div>
-    </div>
+    <>
+      {isConnected && (
+        <div className="max-w-sm rounded-2xl overflow-hidden shadow-lg p-4 bg-white border mx-auto my-20">
+          <img
+            className="w-full rounded-xl"
+            src={metadata.image}
+            alt={metadata.name}
+          />
+          <div className="py-4">
+            <h2 className="text-xl text-gray-950 font-bold mb-2">{metadata.name}</h2>
+            <p className="text-gray-700 text-sm">{metadata.description}</p>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
