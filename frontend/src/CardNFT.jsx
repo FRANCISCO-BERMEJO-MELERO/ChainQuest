@@ -1,11 +1,11 @@
 // src/components/CardNFT.jsx
 import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { useNFTReadContract } from "./hooks/useNFTReadContract";
+import { useAdventurerContract } from './hooks/useAdventurerContract'
 
 export const CardNFT = () => {
   const { address, isConnected } = useAccount();
-  const contract = useNFTReadContract();
+  const { contractRead } = useAdventurerContract();
 
   const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,17 +13,17 @@ export const CardNFT = () => {
 
   useEffect(() => {
     const loadNFT = async () => {
-      if (!address) return;
+      if (!address || !contractRead ) return;
 
       try {
-        const tokenId = await contract.playerToTokenId(address);
+        const tokenId = await contractRead.playerToTokenId(address);
         if (tokenId == 0) {
           setError("No tienes un NFT aún.");
           setLoading(false);
           return;
         }
 
-        const tokenURI = await contract.tokenURI(tokenId);
+        const tokenURI = await contractRead.tokenURI(tokenId);
         const response = await fetch(tokenURI);
         const data = await response.json();
 
@@ -37,7 +37,7 @@ export const CardNFT = () => {
     };
 
     loadNFT();
-  }, [address, contract]);
+  }, [address, contractRead]);
 
   if (loading) return <div className="p-4"></div>;
   if (error) return <div className="p-4 text-red-600">⚠️ {error}</div>;

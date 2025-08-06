@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
-import { useRegistryWriteContract } from '../hooks/useNFTWriteContract'
+import { useAdventurerContract } from '../hooks/useAdventurerContract'
 
 export default function Header() {
   const { address, isConnected } = useAccount()
-  const { contract } = useRegistryWriteContract()
+  const { contractWrite } = useAdventurerContract();
   const [hasMinted, setHasMinted] = useState(false)
 
   useEffect(() => {
     const checkMintStatus = async () => {
-      if (contract && address) {
+      if (contractWrite && address) {
         try {
-          const result = await contract.hasMinted(address)
+          console.log('Verificando si ya mintéo el aventurero..., address:', address)
+          const result = await contractWrite.hasMinted(address)
           setHasMinted(result)
         } catch (error) {
           console.error('Error al verificar si ya mintéo:', error)
@@ -21,16 +22,16 @@ export default function Header() {
     }
 
     checkMintStatus()
-  }, [contract, address])
+  }, [contractWrite, address])
 
   const handleGetAdventurer = async () => {
-    if (!contract) {
+    if (!contractWrite) {
       console.error('Contrato no inicializado')
       return
     }
 
     try {
-      const tx = await contract.safeMint()
+      const tx = await contractWrite.safeMint()
       console.log('Transacción enviada:', tx)
       await tx.wait()
       console.log('Transacción confirmada:', tx)
