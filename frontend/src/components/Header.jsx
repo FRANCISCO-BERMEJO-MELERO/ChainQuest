@@ -2,43 +2,62 @@ import { useEffect, useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
 import { useAdventurerContract } from '../hooks/useAdventurerContract'
+import { useQuesManagerContract } from '../hooks/useQuesManagerContract'
 
 export default function Header() {
   const { address, isConnected } = useAccount()
-  const { contractWrite } = useAdventurerContract();
+  const { contractRead, contractWrite } = useAdventurerContract()
+  const { contractWriteQ } = useQuesManagerContract()
   const [hasMinted, setHasMinted] = useState(false)
 
+  // 📌 Verificar si el usuario ya tiene NFT
   useEffect(() => {
     const checkMintStatus = async () => {
-      if (contractWrite && address) {
+      if (contractRead && address) {
         try {
-          console.log('Verificando si ya mintéo el aventurero..., address:', address)
-          const result = await contractWrite.hasMinted(address)
+          const result = await contractRead.hasMinted(address)
           setHasMinted(result)
         } catch (error) {
           console.error('Error al verificar si ya mintéo:', error)
         }
       }
     }
-
     checkMintStatus()
-  }, [contractWrite, address])
+  }, [contractRead, address])
 
+  // 📌 Función para mintear NFT
   const handleGetAdventurer = async () => {
-    if (!contractWrite) {
-      console.error('Contrato no inicializado')
-      return
-    }
-
+    if (!contractWrite) return console.error('Contrato no inicializado')
     try {
       const tx = await contractWrite.safeMint()
       console.log('Transacción enviada:', tx)
       await tx.wait()
-      console.log('Transacción confirmada:', tx)
-      alert('¡Aventurero conseguido!')
       setHasMinted(true)
+      alert('¡Aventurero conseguido!')
     } catch (error) {
       console.error('Error al conseguir aventurero:', error)
+    }
+  }
+
+  // 📌 Función para añadir misión (solo owner)
+  const handleAddQuest = async () => {
+    try {
+      const tx = await contractWriteQ.addQuest("Misión Debug: sube a nivel alto", 500)
+      await tx.wait()
+      alert("Misión añadida con éxito")
+    } catch (error) {
+      console.error("Error al añadir misión:", error)
+    }
+  }
+
+  // 📌 Función para completar misión (jugador)
+  const handleCompleteQuest = async () => {
+    try {
+      const tx = await contractWriteQ.completeQuest(1) // questId = 1
+      await tx.wait()
+      alert("¡Misión completada!")
+    } catch (error) {
+      console.error("Error al completar misión:", error)
     }
   }
 
@@ -67,6 +86,21 @@ export default function Header() {
             ) : (
               <span className="text-green-400 font-semibold">¡Ya eres un aventurero!</span>
             )}
+
+            {/* Botones de test para misiones */}
+            <button
+              className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded"
+              onClick={handleAddQuest}
+            >
+              Añadir misión (owner)
+            </button>
+
+            <button
+              className="bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-1 rounded"
+              onClick={handleCompleteQuest}
+            >
+              Completar misión #1
+            </button>
           </>
         )}
         <ConnectButton />
