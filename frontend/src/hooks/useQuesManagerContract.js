@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import AdventureAbi from "../abis/QuestManager.json";
 
-const CONTRACT_ADDRESS = "0xD822BEfb26d331F8F67F111FE7eC349Ca3071089";
+const CONTRACT_ADDRESS = "0xfb84030Ab3bd035aE02a33271107d7f3fe31Ef21";
 
 export const useQuesManagerContract = () => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
-  const [contractRead, setContractRead] = useState(null);
+  const [contractReadQ, setContractRead] = useState(null);
   const [contractWriteQ, setContractWrite] = useState(null);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export const useQuesManagerContract = () => {
   return {
     provider,
     signer,
-    contractRead,
+    contractReadQ,
     contractWriteQ,
   };
 };

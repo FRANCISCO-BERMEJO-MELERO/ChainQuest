@@ -41,5 +41,18 @@ contract QuestManager {
 
         emit QuestCompleted(msg.sender, _id, quests[_id].xpReward, block.timestamp);
     }
+    
+    function getQuests() public view returns (Quest[] memory) {
+        Quest[] memory questsList = new Quest[](questCount);
+        for (uint i = 0; i < questCount; i++) {
+            questsList[i] = quests[i];
+        }
+        return questsList;
+    }
+
+
+    function isOwner(address _owner) public view returns(bool){
+        return (owner == _owner);
+    }
 
 }

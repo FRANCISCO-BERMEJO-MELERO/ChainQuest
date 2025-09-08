@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
 import { useAdventurerContract } from '../hooks/useAdventurerContract'
-import { useQuesManagerContract } from '../hooks/useQuesManagerContract'
 
 export default function Header() {
-  const { address, isConnected } = useAccount()
+  const { address} = useAccount()
   const { contractRead, contractWrite } = useAdventurerContract()
-  const { contractWriteQ } = useQuesManagerContract()
   const [hasMinted, setHasMinted] = useState(false)
+
+
+
 
   // 📌 Verificar si el usuario ya tiene NFT
   useEffect(() => {
@@ -39,72 +40,40 @@ export default function Header() {
     }
   }
 
-  // 📌 Función para añadir misión (solo owner)
-  const handleAddQuest = async () => {
-    try {
-      const tx = await contractWriteQ.addQuest("Misión Debug: sube a nivel alto", 500)
-      await tx.wait()
-      alert("Misión añadida con éxito")
-    } catch (error) {
-      console.error("Error al añadir misión:", error)
-    }
-  }
 
-  // 📌 Función para completar misión (jugador)
-  const handleCompleteQuest = async () => {
-    try {
-      const tx = await contractWriteQ.completeQuest(1) // questId = 1
-      await tx.wait()
-      alert("¡Misión completada!")
-    } catch (error) {
-      console.error("Error al completar misión:", error)
-    }
-  }
-
+  // ...
   return (
-    <header className="bg-gray-800 text-white p-4 shadow-md flex justify-between items-center">
-      <h1 className="text-2xl font-bold">NFT Game</h1>
+    <header className="sticky top-0 z-50 bg-gray-900/95 backdrop-blur text-white px-6 py-4 shadow-md flex justify-between items-center">
+      {/* Marca */}
+      <div>
+        <h1 className="text-2xl font-bold text-yellow-400">ChainQuest</h1>
+        <p className="text-sm text-gray-300">Aventureros Web3</p>
+      </div>
 
-      <nav>
-        <ul className="flex space-x-4">
-          <li><a href="/" className="hover:underline">Home</a></li>
-          <li><a href="/about" className="hover:underline">About</a></li>
-          <li><a href="/contact" className="hover:underline">Contact</a></li>
+      {/* Navegación */}
+      <nav className="hidden md:block">
+        <ul className="flex space-x-6 text-sm">
+          <li><a href="/" className="hover:text-yellow-400 transition">Inicio</a></li>
+          <li><a href="/about" className="hover:text-yellow-400 transition">Acerca</a></li>
+          <li><a href="/contact" className="hover:text-yellow-400 transition">Contacto</a></li>
         </ul>
       </nav>
 
-      <div className="flex items-center space-x-4">
-        {isConnected && (
-          <>
-            {!hasMinted ? (
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                onClick={handleGetAdventurer}
-              >
-                Conseguir Aventurero
-              </button>
-            ) : (
-              <span className="text-green-400 font-semibold">¡Ya eres un aventurero!</span>
-            )}
-
-            {/* Botones de test para misiones */}
-            <button
-              className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded"
-              onClick={handleAddQuest}
-            >
-              Añadir misión (owner)
-            </button>
-
-            <button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-1 rounded"
-              onClick={handleCompleteQuest}
-            >
-              Completar misión #1
-            </button>
-          </>
+      {/* Acciones */}
+      <div className="flex items-center space-x-3">
+        {!hasMinted ? (
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            onClick={handleGetAdventurer}
+          >
+            Conseguir Aventurero
+          </button>
+        ) : (
+          <span className="text-green-400 font-semibold">¡Ya eres un aventurero!</span>
         )}
         <ConnectButton />
       </div>
     </header>
   )
+
 }
