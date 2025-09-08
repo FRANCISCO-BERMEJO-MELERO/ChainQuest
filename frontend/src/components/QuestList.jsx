@@ -133,7 +133,8 @@ export default function QuestList() {
             <ul className="max-h-72 overflow-y-auto space-y-2 pr-1">
               {quests.map((mision) => {
                 const idStr = String(mision.id);
-                const isPending = !!pending[idStr];
+                const isPending = !!pending[mision.isActive];
+                console.log(isPending)
                 const descripcion = (mision.description || "desconocida").toLowerCase();
 
                 return (
@@ -166,7 +167,7 @@ export default function QuestList() {
 
                       <div className="flex items-center flex-wrap gap-2 mt-1">
                         <span className="bg-yellow-200 text-yellow-900 px-2 py-[2px] rounded text-[10px] font-medium">
-                          XP: {mision.XP}
+                          XP: {mision.xpReward}
                         </span>
 
                       </div>
@@ -176,17 +177,17 @@ export default function QuestList() {
                     <div className="ml-2 flex flex-col gap-1">
                       <button
                         onClick={() => handleCompleteQuest(idStr)}
-                        disabled={isPending}
+                        disabled={!mision.isActive}
                         className={`text-[11px] px-2 py-1 rounded-lg border
                           ${
-                            isPending
-                              ? "border-yellow-300 text-yellow-400 cursor-not-allowed"
-                              : "border-yellow-900 text-yellow-900 hover:bg-yellow-50"
+                            !mision.isActive
+                              ? "bg-green-600 border-white text-white cursor-not-allowed"
+                              : "border-yellow-900 text-yellow-900 hover:bg-yellow-50 cursor-pointer hover:scale-110 transition-all duration-300"
                           }
                           transition`}
                         title="Completar misión"
                       >
-                        {isPending ? "..." : "Completar"}
+                        {!mision.isActive ? "Completada" : "Completar"}
                       </button>
 
                       {/* Si quieres clonar misiones como owner, habilita este botón */}
