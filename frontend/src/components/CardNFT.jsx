@@ -1,7 +1,7 @@
 // src/components/CardNFT.jsx
 import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { useAdventurerContract } from '../hooks/useAdventurerContract'
+import { useAdventurerContract } from '../hooks/contracts/useAdventurerContract'
 import XPProgressBar from "./XpBar"
 
 export const CardNFT = () => {
@@ -15,7 +15,6 @@ export const CardNFT = () => {
 
 
   const CaculateXp = (attrs) => {
-    console.log(attrs)
     const xpAttr = attrs.find(a => a.trait_type === "XP");
     return xpAttr.value 
   }
@@ -35,7 +34,6 @@ export const CardNFT = () => {
         const tokenURI = await contractRead.tokenURI(tokenId);
         const response = await fetch(tokenURI);
         const data = await response.json();
-        console.log(data)
         const atr = data.attributes || [];
         setxp(CaculateXp(atr))
 

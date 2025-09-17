@@ -1,7 +1,9 @@
-import React from "react";
-import { useQuesManagerContract } from "../hooks/useQuesManagerContract";
+import { useState, useCallback, useEffect } from "react";
+import { useQuesManagerContract } from "../hooks/contracts/useQuesManagerContract";
 import { useAccount } from "wagmi";
 import { List } from "flowbite-react";
+import { Quest, useQuestStore } from "../store/quest.store"
+
 
 /**
  * Normaliza una misión devuelta por el contrato a tipos amigables para el UI.
@@ -12,17 +14,14 @@ export default function QuestList() {
   const { contractWriteQ, contractReadQ } = useQuesManagerContract();
   const { address } = useAccount();
 
-  const [quests, setQuests] = React.useState([]);
-  const [isOwner, setIsOwner] = React.useState(false);
-  const [open, setOpen] = React.useState(true);
-  // pending es un diccionario por id normalizada (string)
-  const [pending, setPending] = React.useState({});
+  const [isOwner, setIsOwner] = useState(false);
+  const [open, setOpen] = useState(true);
 
-  /**
-   * Carga owner y lista de misiones desde el contrato.
-   * Se memoiza para evitar efectos innecesarios.
-   */
-  const load = React.useCallback(async () => {
+  const hydrateQuest = useQuestStore((state) => state.hydrateQuest);
+  const questsStore = useQuestStore((state) => state.quests)
+
+
+  const load = useCallback(async () => {
     if (!address || !contractReadQ) return;
     try {
       const [owner, list] = await Promise.all([
@@ -30,15 +29,17 @@ export default function QuestList() {
         contractReadQ.getQuests(),
       ]);
       setIsOwner(Boolean(owner));
-      console.log("Lista de misiones : ", list)
-      console.log("Lista de misiones : ", list[4].nombre)
-      setQuests(list);
+      let parsedList = list.map((q) => (new Quest(q.id ,q.description, q.xpReward)))
+      parsedList.shift()
+      console.log(parsedList)
+
+      hydrateQuest(parsedList)
     } catch (e) {
       console.error("Error cargando datos:", e);
     }
   }, [address, contractReadQ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     load();
   }, [load]);
 
@@ -68,7 +69,7 @@ export default function QuestList() {
       return;
     }
     try {
-      setPending((p) => ({ ...p, [idStr]: true }));
+      
 
 
       let onchainId;
@@ -86,15 +87,15 @@ export default function QuestList() {
       alert(
         error?.shortMessage || error?.message || "No se pudo completar la misión."
       );
-    } finally {
-      setPending((p) => ({ ...p, [idStr]: false }));
-    }
+    } 
   };
+
+
 
   return (
     <aside
       className="fixed right-4 top-24 md:top-24 z-30 w-80 lg:w-96"
-      aria-label="Panel de misiones"
+      aria-label="Panel de questes"
     >
       {/* Botón para añadir una misión de prueba (solo owner) */}
       {isOwner && (
@@ -111,9 +112,9 @@ export default function QuestList() {
         {/* Header compacto */}
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-bold text-yellow-900">📜 Misiones</span>
+            <span className="text-sm font-bold text-yellow-900">📜 questes</span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-900 font-semibold">
-              {quests.length}
+              {questsStore.length}
             </span>
           </div>
           <button
@@ -131,11 +132,11 @@ export default function QuestList() {
         {open && (
           <div id="quests-body" className="px-2 pb-2">
             <ul className="max-h-72 overflow-y-auto space-y-2 pr-1">
-              {quests.map((mision) => {
-                const idStr = String(mision.id);
-                const isPending = !!pending[mision.isActive];
+              {questsStore.map((quest) => {
+                const idStr = String(quest.id);
+                const isPending = quest.state === "AVAILABLE" || quest.state === "IN_PROGRESS" ;
                 console.log(isPending)
-                const descripcion = (mision.description || "desconocida").toLowerCase();
+                const descripcion = (quest.description || "desconocida");
 
                 return (
                   <li
@@ -155,7 +156,7 @@ export default function QuestList() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-yellow-900 text-sm truncate">
-                          {mision.nombre}
+                          {quest.nombre}
                         </span>
                       </div>
 
@@ -167,7 +168,7 @@ export default function QuestList() {
 
                       <div className="flex items-center flex-wrap gap-2 mt-1">
                         <span className="bg-yellow-200 text-yellow-900 px-2 py-[2px] rounded text-[10px] font-medium">
-                          XP: {mision.xpReward}
+                          XP: {quest.reward}
                         </span>
 
                       </div>
@@ -175,38 +176,82 @@ export default function QuestList() {
 
                     {/* Acciones compactas */}
                     <div className="ml-2 flex flex-col gap-1">
-                      <button
-                        onClick={() => handleCompleteQuest(idStr)}
-                        disabled={!mision.isActive}
-                        className={`text-[11px] px-2 py-1 rounded-lg border
-                          ${
-                            !mision.isActive
-                              ? "bg-green-600 border-white text-white cursor-not-allowed"
-                              : "border-yellow-900 text-yellow-900 hover:bg-yellow-50 cursor-pointer hover:scale-110 transition-all duration-300"
-                          }
-                          transition`}
-                        title="Completar misión"
-                      >
-                        {!mision.isActive ? "Completada" : "Completar"}
-                      </button>
+                      {quest.state === "AVAILABLE" && (
+                        <button
+                          onClick={() => console.log("Iniciar quest")}
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-yellow-900 text-yellow-900 bg-yellow-100 hover:bg-yellow-200 transition-colors duration-200"
+                        >
+                          Iniciar Quest
+                        </button>
+                      )}
 
-                      {/* Si quieres clonar misiones como owner, habilita este botón */}
+                      {quest.state === "IN_PROGRESS" && (
+                        <button
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-blue-900 text-blue-900 bg-blue-100 hover:bg-blue-200 transition-colors duration-200"
+                        >
+                          Reanudar misión
+                        </button>
+                      )}
+
+                      {quest.state === "READY_TO_CLAIM" && (
+                        <button
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-green-900 text-green-900 bg-green-100 hover:bg-green-200 transition-colors duration-200 animate-pulse"
+                        >
+                          Reclamar recompensa
+                        </button>
+                      )}
+
+                      {quest.state === "COMPLETED" && (
+                        <button
+                          disabled
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed"
+                        >
+                          Completada
+                        </button>
+                      )}
+
+
+                      {/* Si quieres clonar quests como owner, habilita este botón */}
                       {/* {isOwner && (
                         <button
-                          onClick={() => handleAddQuest(mision.nombre, mision.XP)}
+                          onClick={() => handleAddQuest(quest.nombre, quest.XP)}
                           className="text-[11px] px-2 py-1 rounded-lg border border-yellow-900 text-yellow-900 hover:bg-yellow-50 transition"
                           title="Clonar misión on-chain"
                         >
                           Clonar
                         </button>
                       )} */}
+
+
+
+{/* 
+                      <button
+                        onClick={() => handleCompleteQuest(idStr)}
+                        disabled={!quest.isActive}
+                        className={`text-[11px] px-2 py-1 rounded-lg border
+                          ${
+                            !quest.isActive
+                              ? "bg-green-600 border-white text-white cursor-not-allowed"
+                              : "border-yellow-900 text-yellow-900 hover:bg-yellow-50 cursor-pointer hover:scale-110 transition-all duration-300"
+                          }
+                          transition`}
+                        title="Completar misión"
+                      >
+                        {!quest.isActive ? "Completada" : "Completar"}
+                      </button> */}
+
+
+
+
                     </div>
                   </li>
                 );
               })}
             </ul>
           </div>
+          
         )}
+        
       </div>
     </aside>
   );

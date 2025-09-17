@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
-import AdventureAbi from "../abis/QuestManager.json";
+import AdventureAbi from "../../abis/AdventureNFT.json";
 
-const CONTRACT_ADDRESS = "0xfb84030Ab3bd035aE02a33271107d7f3fe31Ef21";
+const CONTRACT_ADDRESS = "0xCB7f30717c23194f56Bd944D655A96d3B91a65cF";
 
-export const useQuesManagerContract = () => {
+export const useAdventurerContract = () => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
-  const [contractReadQ, setContractRead] = useState(null);
-  const [contractWriteQ, setContractWrite] = useState(null);
+  const [contractRead, setContractRead] = useState(null);
+  const [contractWrite, setContractWrite] = useState(null);
 
   useEffect(() => {
     const init = async () => {
@@ -35,7 +35,7 @@ export const useQuesManagerContract = () => {
   return {
     provider,
     signer,
-    contractReadQ,
-    contractWriteQ,
+    contractRead,
+    contractWrite,
   };
 };

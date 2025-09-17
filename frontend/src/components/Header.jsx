@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
-import { useAdventurerContract } from '../hooks/useAdventurerContract'
+import { useAdventurerContract } from '../hooks/contracts/useAdventurerContract'
 
 export default function Header() {
   const { address} = useAccount()
