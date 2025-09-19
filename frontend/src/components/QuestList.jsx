@@ -22,8 +22,11 @@ export default function QuestList() {
   const questsStore = useQuestStore((state) => state.quests)
 
 
+
+
   const load = useCallback(async () => {
     if (!address || !contractReadQ){
+      
       hydrateQuest([]);
       return;
       }
@@ -46,7 +49,7 @@ export default function QuestList() {
     } catch (e) {
       console.error("Error cargando datos:", e);
     }
-  }, [address, contractReadQ]);
+  }, [address, contractReadQ, hydrateQuest]);
 
   useEffect(() => {
     load();
@@ -64,10 +67,12 @@ export default function QuestList() {
       await load(); 
     } catch (error) {
       console.error("Error al añadir misión:", error);
+      window.location.reload();
       alert(
         error?.shortMessage ||
           error?.message ||
           "No se pudo añadir la misión (¿eres el owner?)."
+          
       );
     }
   };
@@ -89,25 +94,27 @@ export default function QuestList() {
       return;
     }
     try {
-      
-
-
       let onchainId;
       try {
         onchainId = BigInt(idStr);
       } catch {
         onchainId = Number(idStr);
       }
-
+      hydrateQuest(
+        questsStore.map((q) =>
+          q.id === idStr ? { ...q, state: "CLAIMING" } : q
+        )
+      );
       const tx = await contractWriteQ.completeQuest(onchainId);
       await tx.wait();
-      await load(); 
+      await load();
     } catch (error) {
       console.error("Error al completar misión:", error);
       alert(
         error?.shortMessage || error?.message || "No se pudo completar la misión."
       );
-    } 
+      window.location.reload();
+    }
   };
 
 
@@ -154,8 +161,6 @@ export default function QuestList() {
             <ul className="max-h-72 overflow-y-auto space-y-2 pr-1">
               {questsStore.map((quest) => {
                 const idStr = String(quest.id);
-                const isPending = quest.state === "AVAILABLE" || quest.state === "IN_PROGRESS" ;
-                console.log(isPending)
                 const descripcion = (quest.description || "desconocida");
 
                 return (
@@ -223,6 +228,14 @@ export default function QuestList() {
                           Reclamar recompensa
                         </button>
                       )}
+                      {quest.state === "CLAIMING" && (
+                        <button
+                          disabled
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed"
+                        >
+                          Reclamando...
+                        </button>
+                      )}
 
                       {quest.state === "COMPLETED" && (
                         <button
@@ -232,40 +245,6 @@ export default function QuestList() {
                           Completada
                         </button>
                       )}
-
-
-                      {/* Si quieres clonar quests como owner, habilita este botón */}
-                      {/* {isOwner && (
-                        <button
-                          onClick={() => handleAddQuest(quest.nombre, quest.XP)}
-                          className="text-[11px] px-2 py-1 rounded-lg border border-yellow-900 text-yellow-900 hover:bg-yellow-50 transition"
-                          title="Clonar misión on-chain"
-                        >
-                          Clonar
-                        </button>
-                      )} */}
-
-
-
-{/* 
-                      <button
-                        onClick={() => handleCompleteQuest(idStr)}
-                        disabled={!quest.isActive}
-                        className={`text-[11px] px-2 py-1 rounded-lg border
-                          ${
-                            !quest.isActive
-                              ? "bg-green-600 border-white text-white cursor-not-allowed"
-                              : "border-yellow-900 text-yellow-900 hover:bg-yellow-50 cursor-pointer hover:scale-110 transition-all duration-300"
-                          }
-                          transition`}
-                        title="Completar misión"
-                      >
-                        {!quest.isActive ? "Completada" : "Completar"}
-                      </button> */}
-
-
-
-
                     </div>
                   </li>
                 );
