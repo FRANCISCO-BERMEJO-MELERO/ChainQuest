@@ -4,11 +4,11 @@ import { useAccount } from "wagmi";
 import { List } from "flowbite-react";
 import { Quest, useQuestStore } from "../store/quest.store"
 
-
 /**
- * Normaliza una misión devuelta por el contrato a tipos amigables para el UI.
+ * TODO: Implementar la lógica de las quests:
+ * - Cargar de forma correcta los estado de las quest, según si lo ha completado o no el usuario. Para ello hay un map de completed en el contrato. 
+ * 
  */
-
 
 export default function QuestList() {
   const { contractWriteQ, contractReadQ } = useQuesManagerContract();
@@ -18,19 +18,28 @@ export default function QuestList() {
   const [open, setOpen] = useState(true);
 
   const hydrateQuest = useQuestStore((state) => state.hydrateQuest);
+  const setStatus = useQuestStore((state) => state.setStatus);
   const questsStore = useQuestStore((state) => state.quests)
 
 
   const load = useCallback(async () => {
-    if (!address || !contractReadQ) return;
+    if (!address || !contractReadQ){
+      hydrateQuest([]);
+      return;
+      }
     try {
-      const [owner, list] = await Promise.all([
+      const [owner, list, questCompleted] = await Promise.all([
         contractReadQ.isOwner(address),
         contractReadQ.getQuests(),
+        contractReadQ.getQuestCompleted(address),
       ]);
       setIsOwner(Boolean(owner));
-      let parsedList = list.map((q) => (new Quest(q.id ,q.description, q.xpReward)))
+      console.log("Quests completadas de ", address , "  :", questCompleted);
+      // console.log(list)
+      // console.log("Esta activa:",list[2].isActive);
+      let parsedList = list.map((q) => (new Quest(q.id ,q.description, q.xpReward)));
       parsedList.shift()
+      parsedList = setCompletedQuest(questCompleted, parsedList)
       console.log(parsedList)
 
       hydrateQuest(parsedList)
@@ -62,6 +71,17 @@ export default function QuestList() {
       );
     }
   };
+
+  const setCompletedQuest = (completed, parsedList) => {
+    parsedList.forEach((quest) => {
+      if (completed.includes(quest.id)) {
+        quest.state = "COMPLETED";
+      } else {
+        quest.state = "AVAILABLE";
+      }
+    });
+    return parsedList;
+  }
 
   const handleCompleteQuest = async (idStr) => {
     if (!contractWriteQ) {
@@ -95,7 +115,7 @@ export default function QuestList() {
   return (
     <aside
       className="fixed right-4 top-24 md:top-24 z-30 w-80 lg:w-96"
-      aria-label="Panel de questes"
+      aria-label="Panel de misiones"
     >
       {/* Botón para añadir una misión de prueba (solo owner) */}
       {isOwner && (
@@ -112,7 +132,7 @@ export default function QuestList() {
         {/* Header compacto */}
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-bold text-yellow-900">📜 questes</span>
+            <span className="text-sm font-bold text-yellow-900">📜 Misiones</span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-900 font-semibold">
               {questsStore.length}
             </span>
@@ -178,7 +198,10 @@ export default function QuestList() {
                     <div className="ml-2 flex flex-col gap-1">
                       {quest.state === "AVAILABLE" && (
                         <button
-                          onClick={() => console.log("Iniciar quest")}
+                          onClick={() => {
+                            setStatus(quest.id, "IN_PROGRESS")
+                            handleCompleteQuest(quest.id)
+                          }}
                           className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-yellow-900 text-yellow-900 bg-yellow-100 hover:bg-yellow-200 transition-colors duration-200"
                         >
                           Iniciar Quest

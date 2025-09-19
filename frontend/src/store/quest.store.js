@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 
 class Quest{
-    constructor(id, description, reward, state="AVAILABLE"){
+    constructor(id, description, reward, state){
         this.id = id;
         this.description = description;
         this.reward = reward;
@@ -16,7 +16,7 @@ const useQuestStore = create((set)=>({
     quests:[],
     hydrateQuest: (quests) => set({ quests }), // sobreescribe todo el array
     setStatus: (id, newState) => set((state) => ({ 
-        Quest: state.Quest.map(
+        quests: state.quests.map(
             quests => quests.id === id ? { ...quests, state: newState } : quests
             ) 
     })),

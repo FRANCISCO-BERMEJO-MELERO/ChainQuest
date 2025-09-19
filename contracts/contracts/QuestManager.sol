@@ -50,6 +50,25 @@ contract QuestManager {
         return questsList;
     }
 
+    function getQuestCompleted(address _player) public view returns (uint[] memory) {
+        uint completedCount = 0;
+        for (uint i = 1; i <= questCount; i++) {
+            if (completed[_player][i]) {
+                completedCount++;
+            }
+        }
+
+        uint[] memory completedQuests = new uint[](completedCount);
+        uint index = 0;
+        for (uint i = 1; i <= questCount; i++) {
+            if (completed[_player][i]) {
+                completedQuests[index] = i;
+                index++;
+            }
+        }
+        return completedQuests;
+    }
+
 
     function isOwner(address _owner) public view returns(bool){
         return (owner == _owner);

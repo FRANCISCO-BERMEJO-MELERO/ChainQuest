@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import AdventureAbi from "../../abis/AdventureNFT.json";
 
-const CONTRACT_ADDRESS = "0xCB7f30717c23194f56Bd944D655A96d3B91a65cF";
+const CONTRACT_ADDRESS = "0x14140aE281eb5ef85901012149f2619d5111eFe4";
 
 export const useAdventurerContract = () => {
   const [provider, setProvider] = useState(null);

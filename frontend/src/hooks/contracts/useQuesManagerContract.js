@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
 import AdventureAbi from "../../abis/QuestManager.json";
 
-const CONTRACT_ADDRESS = "0xfb84030Ab3bd035aE02a33271107d7f3fe31Ef21";
+const CONTRACT_ADDRESS = "0x0a11Cb70aB566401FC04e1b8c36aD3A6E2cd02Cd";
 
 export const useQuesManagerContract = () => {
   const [provider, setProvider] = useState(null);
