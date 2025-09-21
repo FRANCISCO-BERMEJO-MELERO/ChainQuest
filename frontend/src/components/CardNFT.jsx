@@ -58,23 +58,35 @@ export const CardNFT = () => {
   
 
   return (
-    <>
-      {isConnected && (
-        <div className="mx-auto">
-          <div className="max-w-sm rounded-2xl overflow-hidden shadow-lg p-4 bg-white border mx-auto my-20">
-            <img
-              className="w-full rounded-xl"
-              src={metadata.image}
-              alt={metadata.name}
-            />
-            <div className="py-4">
-              <h2 className="text-xl text-gray-950 font-bold mb-2">{metadata.name}</h2>
-              <p className="text-gray-700 text-sm">{metadata.description}</p>
-            </div>
-          </div>
-          <XPProgressBar totalXP={xp} level={level} />
+   <>
+  {isConnected && (
+    <div className="mx-auto">
+      <div
+        className="max-w-sm rounded-2xl overflow-hidden shadow-xl p-4 mx-auto my-20 border-2"
+        style={{
+          background:
+            'radial-gradient(120% 140% at 50% 0%, #fff6d7 0%, #efe3c4 35%, #e6d7b1 100%)',
+          borderColor: '#d6c497',
+          boxShadow:
+            '0 8px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.5)',
+        }}
+      >
+        <img
+          className="w-full rounded-xl border border-[#d6c497]/70 shadow-md"
+          src={metadata.image}
+          alt={metadata.name}
+        />
+        <div className="py-4 text-center">
+          <h2 className="text-2xl font-extrabold text-[#3b2a1a] drop-shadow-sm mb-1">
+            {metadata.name}
+          </h2>
+          <p className="text-[#5a4633] text-sm italic">{metadata.description}</p>
         </div>
-      )}
-    </>
+      </div>
+      <XPProgressBar totalXP={xp} level={level} />
+    </div>
+  )}
+</>
+
   );
 };

@@ -3,77 +3,79 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
 import { useAdventurerContract } from '../hooks/contracts/useAdventurerContract'
 
-export default function Header() {
-  const { address} = useAccount()
+export default function HeaderParchment() {
+  const { address } = useAccount()
   const { contractRead, contractWrite } = useAdventurerContract()
   const [hasMinted, setHasMinted] = useState(false)
 
-
-
-
-  // 📌 Verificar si el usuario ya tiene NFT
   useEffect(() => {
-    const checkMintStatus = async () => {
+    const run = async () => {
       if (contractRead && address) {
-        try {
-          const result = await contractRead.hasMinted(address)
-          setHasMinted(result)
-        } catch (error) {
-          console.error('Error al verificar si ya mintéo:', error)
+        try { setHasMinted(await contractRead.hasMinted(address)) } catch(err) {
+          console.error(err)
         }
       }
     }
-    checkMintStatus()
+    run()
   }, [contractRead, address])
 
-  // 📌 Función para mintear NFT
   const handleGetAdventurer = async () => {
-    if (!contractWrite) return console.error('Contrato no inicializado')
-    try {
-      const tx = await contractWrite.safeMint()
-      console.log('Transacción enviada:', tx)
-      await tx.wait()
-      setHasMinted(true)
-      alert('¡Aventurero conseguido!')
-    } catch (error) {
-      console.error('Error al conseguir aventurero:', error)
+    if (!contractWrite) return
+    try { const tx = await contractWrite.safeMint(); await tx.wait(); setHasMinted(true) } catch(err) {
+      console.error(err)
     }
   }
 
-
-  // ...
   return (
-    <header className="sticky top-0 z-50 bg-gray-900/95 backdrop-blur text-white px-6 py-4 shadow-md flex justify-between items-center">
-      {/* Marca */}
+<div className="sticky top-4 z-50">
+  <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
+    {/* Marca */}
+    <div className="flex items-center gap-2">
+      <span className="text-3xl">🗡️</span>
       <div>
-        <h1 className="text-2xl font-bold text-yellow-400">ChainQuest</h1>
-        <p className="text-sm text-gray-300">Aventureros Web3</p>
+        <h1 className="text-3xl font-extrabold text-[#f7eac4] tracking-wide">
+          ChainQuest
+        </h1>
+        <p className="text-base text-[#f7eac4] italic -mt-1">
+          Aventureros Web3
+        </p>
       </div>
+    </div>
 
-      {/* Navegación */}
-      <nav className="hidden md:block">
-        <ul className="flex space-x-6 text-sm">
-          <li><a href="/" className="hover:text-yellow-400 transition">Inicio</a></li>
-          <li><a href="/about" className="hover:text-yellow-400 transition">Acerca</a></li>
-          <li><a href="/contact" className="hover:text-yellow-400 transition">Contacto</a></li>
-        </ul>
-      </nav>
+    {/* Navegación */}
+    <nav className="hidden md:block">
+      <ul className="flex gap-6">
+        {['Inicio', 'Acerca', 'Contacto'].map((l) => (
+          <li key={l}>
+            <a
+              href={l === 'Inicio' ? '/' : `/${l.toLowerCase()}`}
+              className="px-3 py-1.5 rounded-lg text-lg font-bold text-[#f7eac4] hover:text-[#433725] transition"
+            >
+              {l}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
 
-      {/* Acciones */}
-      <div className="flex items-center space-x-3">
-        {!hasMinted ? (
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={handleGetAdventurer}
-          >
-            Conseguir Aventurero
-          </button>
-        ) : (
-          <span className="text-green-400 font-semibold">¡Ya eres un aventurero!</span>
-        )}
-        <ConnectButton />
-      </div>
-    </header>
+    {/* Acciones */}
+    <div className="flex items-center gap-4">
+      {!hasMinted ? (
+        <button
+          onClick={handleGetAdventurer}
+          className="px-5 py-2 rounded-lg text-lg font-bold border border-[#a77a2d] bg-gradient-to-b from-[#f2d98c] to-[#d4a962] text-[#3b2a1a] shadow"
+        >
+          Conseguir Aventurero
+        </button>
+      ) : (
+        <span className="px-4 py-2 rounded-lg text-lg font-bold border border-green-700 text-green-800 bg-green-200/70">
+          ✔ Aventurero listo
+        </span>
+      )}
+      <ConnectButton />
+    </div>
+  </div>
+</div>
+
   )
-
 }
