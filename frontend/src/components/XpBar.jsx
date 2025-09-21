@@ -1,5 +1,4 @@
-export default function XPProgressBar({ totalXP }) {
-    const level = Math.floor(totalXP / 100) + 1;
+export default function XPProgressBar({ totalXP, level }) {
     const xpIntoLevel = totalXP % 100;
     const progress = (xpIntoLevel / 100) * 100;
   

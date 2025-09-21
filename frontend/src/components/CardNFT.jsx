@@ -7,6 +7,7 @@ import XPProgressBar from "./XpBar"
 export const CardNFT = () => {
   const { address, isConnected } = useAccount();
   const { contractRead } = useAdventurerContract();
+  const [level, setlevel] = useState();
 
   const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,9 +35,10 @@ export const CardNFT = () => {
         const tokenURI = await contractRead.tokenURI(tokenId);
         const response = await fetch(tokenURI);
         const data = await response.json();
-        const atr = data.attributes || [];
-        setxp(CaculateXp(atr))
-
+        const attr = data.attributes || [];
+        setxp(CaculateXp(attr))
+        const levelAttr = attr.find(a => a.trait_type === "Nivel");
+        setlevel(levelAttr.value);
         setMetadata(data);
       } catch (err) {
         console.error("Error al cargar el NFT:", err);
@@ -70,7 +72,7 @@ export const CardNFT = () => {
               <p className="text-gray-700 text-sm">{metadata.description}</p>
             </div>
           </div>
-          <XPProgressBar totalXP={xp} />
+          <XPProgressBar totalXP={xp} level={level} />
         </div>
       )}
     </>
